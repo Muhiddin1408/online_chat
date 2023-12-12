@@ -31,27 +31,7 @@ def register(request):
                 login_time=datetime.datetime.now()
             )
             number.save()
-        elif user.last().sms_status == False:
-            user.last().delete()
-            number = User.objects.create(
-                username=phone,
-                first_name=first_name
-            )
-            number.set_password(password)
-            sms_code = random.randint(1000, 9999)
-            number.phone = int(phone)
-            number.sms_code = sms_code
-            number.save()
-            # send_sms(phone, "Tasdiqlash codi " + str(sms_code))
-
-            if number:
-                result = {
-                    'status': 1,
-                    'msg': 'Sms sended',
-                    'user': SerializerUser(number, many=False, context={"request": request}).data,
-                }
-                SendSmsApiWithEskiz(message="https://star-one.uz/ Tasdiqlash kodi " + str(sms_code), phone=phone).send()
-                return Response(result, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
         else:
             res = {
                 'status': 0

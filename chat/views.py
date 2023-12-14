@@ -8,6 +8,9 @@ from chat.models import User
 from rest_framework import generics, filters
 from rest_framework.pagination import PageNumberPagination
 
+from chat.serializers import SerializerUser
+
+
 # Create your views here.
 
 
@@ -51,35 +54,26 @@ def register(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 1000
+class SmallPagesPagination(PageNumberPagination):
+    page_size = 20
 
 
-class ProductCompanyRu(generics.ListAPIView):
+class SearchUser(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = SerializerUser
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     pagination_class = SmallPagesPagination
 
     def get(self, request, *args, **kwargs):
-        id = request.GET['id']
-        filter = request.GET['filter']
-        category = request.GET['category']
-        if category:
-            product_filter = Product.objects.filter(company_id=id, category=category, permission=True, rejection=False)
-        else:
-            product_filter = Product.objects.filter(company_id=id, permission=True, rejection=False)
-        if filter == 'cheap':
-            product = product_filter.order_by("price")
-        elif filter == 'expensive':
-            product = product_filter.order_by("-price")
-        else:
-            product = product_filter.all().order_by('-id')
+        user = request.user
+        product = User.objects.filter(years_id=user.choose_years.id,  gen=user.choose_gen)
         serializer = SerializerUser(product, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
-#
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_chat():
+    pass
 

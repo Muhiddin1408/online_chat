@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import register
+from .views import register, SearchUser
 
 urlpatterns = [
-    path('', register)
+    path('', register),
+    path('get/', SearchUser.as_view()),
 ]

@@ -85,6 +85,19 @@ def create_chat(request):
     return
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def create_chat(request):
+    data = request.POST
+    user_id = data.get('id')
+    user = request.user
+    Chat.objects.create(
+        create=user,
+        create2_id=user_id,
+    )
+    return
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_message(request):

@@ -1,4 +1,7 @@
 import datetime
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
@@ -82,7 +85,7 @@ def create_chat(request):
         create=user,
         create2_id=user_id,
     )
-    return
+    return HttpResponseRedirect(reverse_lazy('create'))
 
 
 @api_view(['GET'])
@@ -90,7 +93,6 @@ def create_chat(request):
 def chat_list(request):
     user = request.user
     chat = Chat.objects.filter(create=user) | Chat.objects.filter(create2=user)
-
     chat.order_by('id').values()
     return Response(SerializerChat(chat, many=True).data)
 
@@ -98,9 +100,7 @@ def chat_list(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def massage_list(request, pk):
-    user = request.user
     chat = Massage.objects.filter(chat_id=pk)
-
     chat.order_by('-id')
     return Response(SerializerChat(chat, many=True).data)
 
@@ -115,5 +115,6 @@ def send_message(request):
     Massage.objects.create(
         massage=massage,
         chat_id=chat_id,
+        user=user
     )
     return

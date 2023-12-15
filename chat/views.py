@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from chat.models import User, Chat, Massage
 from rest_framework import generics, filters
 from rest_framework.pagination import PageNumberPagination
-from chat.serializers import SerializerUser, SerializerChat
+from .serializers import SerializerUser, SerializerChat
 
 
 @api_view(['POST'])

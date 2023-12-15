@@ -27,6 +27,7 @@ class Chat(models.Model):
     chat_name = models.CharField(max_length=123)
     create = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create')
     create2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create2')
+    updated_at = models.DateTimeField(blank=True, null=True)
 
 
 class Massage(models.Model):

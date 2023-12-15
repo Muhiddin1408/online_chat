@@ -87,13 +87,10 @@ def create_chat(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def create_chat(request):
-    data = request.POST
-    user_id = data.get('id')
+def chat_list(request, pk):
     user = request.user
-    Chat.objects.create(
+    Chat.objects.filter(
         create=user,
-        create2_id=user_id,
     )
     return
 
@@ -110,4 +107,3 @@ def send_message(request):
         chat_id=chat_id,
     )
     return
-

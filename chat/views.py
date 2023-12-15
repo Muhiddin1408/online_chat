@@ -1,5 +1,4 @@
 import datetime
-
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -10,11 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from chat.models import User, Chat, Massage
 from rest_framework import generics, filters
 from rest_framework.pagination import PageNumberPagination
-
 from chat.serializers import SerializerUser, SerializerChat
-
-
-# Create your views here.
 
 
 @api_view(['POST'])

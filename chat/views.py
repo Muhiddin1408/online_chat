@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from starlette import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from chat.models import User
+from chat.models import User, Chat, Massage
 from rest_framework import generics, filters
 from rest_framework.pagination import PageNumberPagination
 
@@ -74,6 +74,27 @@ class SearchUser(generics.ListAPIView):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def create_chat():
-    pass
+def create_chat(request):
+    data = request.POST
+    user_id = data.get('id')
+    user = request.user
+    Chat.objects.create(
+        create=user,
+        create2_id=user_id,
+    )
+    return
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_message(request):
+    data = request.POST
+    chat_id = data.get('id')
+    massage = data.get('massage')
+    user = request.user
+    Massage.objects.create(
+        massage=massage,
+        chat_id=chat_id,
+    )
+    return
 

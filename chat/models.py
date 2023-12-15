@@ -32,6 +32,8 @@ class Chat(models.Model):
 class Massage(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     massage = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
 
 class Apartment(models.Model):

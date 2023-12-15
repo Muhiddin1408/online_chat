@@ -8,7 +8,7 @@ from chat.models import User, Chat, Massage
 from rest_framework import generics, filters
 from rest_framework.pagination import PageNumberPagination
 
-from chat.serializers import SerializerUser
+from chat.serializers import SerializerUser, SerializerChat
 
 
 # Create your views here.
@@ -87,12 +87,22 @@ def create_chat(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def chat_list(request, pk):
+def chat_list(request):
     user = request.user
-    Chat.objects.filter(
-        create=user,
-    )
-    return
+    chat = Chat.objects.filter(create=user) | Chat.objects.filter(create2=user)
+
+    chat.order_by('id').values()
+    return Response(SerializerChat(chat, many=True).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def massage_list(request, pk):
+    user = request.user
+    chat = Massage.objects.filter(chat_id=pk)
+
+    chat.order_by('-id')
+    return Response(SerializerChat(chat, many=True).data)
 
 
 @api_view(['POST'])

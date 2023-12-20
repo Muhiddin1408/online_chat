@@ -1,12 +1,19 @@
 from rest_framework import serializers
 
-from chat.models import User, Chat, Massage
+from chat.models import User, Chat, Massage, Years
 
 
 class SerializerUser(serializers.ModelSerializer):
 
     class Meta:
         model = User
+        fields = '__all__'
+
+
+class SerializerYears(serializers.ModelSerializer):
+
+    class Meta:
+        model = Years
         fields = '__all__'
 
 

@@ -6,10 +6,10 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from starlette import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from chat.models import User, Chat, Massage
+from chat.models import User, Chat, Massage, Years
 from rest_framework import generics, filters
 from rest_framework.pagination import PageNumberPagination
-from .serializers import SerializerUser, SerializerChat
+from .serializers import SerializerUser, SerializerChat, SerializerYears
 
 
 @api_view(['POST'])
@@ -28,7 +28,6 @@ def register(request):
                 username=ip,
                 ip=ip,
                 years_id=years,
-                choose_years_id=choose_years,
                 choose_gen=choose_gen,
                 gen=gen,
                 login_time=datetime.datetime.now()
@@ -66,6 +65,20 @@ class SearchUser(generics.ListAPIView):
         user = request.user
         product = User.objects.filter(years_id=user.choose_years.id,  gen=user.choose_gen)
         serializer = SerializerUser(product, many=True)
+        page = self.paginate_queryset(serializer.data)
+        return self.get_paginated_response(page)
+
+
+class YearView(generics.ListAPIView):
+    queryset = Years.objects.all()
+    serializer_class = SerializerYears
+    permission_classes = [AllowAny]
+    pagination_class = SmallPagesPagination
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        product = Years.objects.all()
+        serializer = SerializerYears(product, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
 

@@ -20,7 +20,7 @@ class User(AbstractUser):
     choose_gen = models.CharField(max_length=123, choices=GEN, blank=True, null=True)
     login_time = models.DateTimeField(blank=True, null=True)
     years = models.ForeignKey(Years, on_delete=models.CASCADE, related_name='years', blank=True, null=True)
-    choose_years = models.ForeignKey(Years, on_delete=models.CASCADE, related_name='choose_years', blank=True, null=True)
+    choose_years = models.ManyToManyField(Years, related_name='choose_years', blank=True, null=True)
 
 
 class Chat(models.Model):

@@ -17,6 +17,7 @@ from .serializers import SerializerUser, SerializerChat, SerializerYears
 def register(request):
     try:
         ip = request.data.get('ip')
+        lang = request.data.get('lang')
         years = request.data.get('years')
         choose_years = request.data.get('choose_years')
         choose_gen = request.data.get('choose_gen')
@@ -27,12 +28,16 @@ def register(request):
             number = User.objects.create(
                 username=ip,
                 ip=ip,
+                lang=lang,
                 years_id=years,
                 choose_gen=choose_gen,
                 gen=gen,
                 login_time=datetime.datetime.now()
             )
-            number.save()
+            for i in choose_years:
+                number.choose_years.add(Years.objects.get(id=i))
+                number.save()
+            print(SerializerUser(number).data)
             token = RefreshToken.for_user(number)
             result = {
                 'access': str(token.access_token),

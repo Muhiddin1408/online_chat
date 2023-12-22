@@ -15,8 +15,14 @@ class User(AbstractUser):
         ('woman', "WOMAN"),
         ('all', "ALL"),
     )
+    LANG = (
+        ('uz', "UZ"),
+        ('ru', "RU"),
+        ('en', "EN"),
+    )
     ip = models.CharField(max_length=124, blank=True, null=True)
     gen = models.CharField(max_length=123, choices=GEN, blank=True, null=True)
+    lang = models.CharField(max_length=123, choices=LANG, blank=True, null=True)
     choose_gen = models.CharField(max_length=123, choices=GEN, blank=True, null=True)
     login_time = models.DateTimeField(blank=True, null=True)
     years = models.ForeignKey(Years, on_delete=models.CASCADE, related_name='years', blank=True, null=True)

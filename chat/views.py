@@ -68,7 +68,7 @@ class SearchUser(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        product = User.objects.filter(years_id=user.choose_years.id,  gen=user.choose_gen)
+        product = User.objects.filter(years=user.choose_years,  gen=user.choose_gen)
         serializer = SerializerUser(product, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)

@@ -1,5 +1,5 @@
 import datetime
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, action
@@ -91,15 +91,18 @@ class YearView(generics.ListAPIView):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_chat(request):
-    data = request.POST
+    data = request.data
     user_id = data.get('id')
-    user2 = request.user
-    user = User.objects.get(id=user_id)
-    Chat.objects.create(
-        create=user,
+    user = request.user.id
+    user2 = User.objects.get(id=user_id)
+    chat = Chat.objects.create(
+        create_id=user,
         create2=user2,
     )
-    return HttpResponseRedirect(reverse_lazy('create'))
+    context = {
+        "id": chat.id
+    }
+    return Response(context, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])

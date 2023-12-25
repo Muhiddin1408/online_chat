@@ -93,10 +93,11 @@ class YearView(generics.ListAPIView):
 def create_chat(request):
     data = request.POST
     user_id = data.get('id')
-    user = request.user
+    user2 = request.user
+    user = User.objects.get(id=user_id)
     Chat.objects.create(
         create=user,
-        create2_id=user_id,
+        create2=user2,
     )
     return HttpResponseRedirect(reverse_lazy('create'))
 

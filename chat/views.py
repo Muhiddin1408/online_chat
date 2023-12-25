@@ -134,4 +134,4 @@ def send_message(request):
         chat_id=chat_id,
         user=user
     )
-    return
+    return Response(status=status.HTTP_201_CREATED)

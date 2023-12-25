@@ -125,7 +125,7 @@ def massage_list(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_message(request):
-    data = request.POST
+    data = request.data
     chat_id = data.get('id')
     massage = data.get('massage')
     user = request.user

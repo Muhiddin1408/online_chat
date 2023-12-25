@@ -7,6 +7,6 @@ urlpatterns = [
     path('year/', YearView.as_view()),
     path('chat/list/', chat_list),
     path('create/chat/', create_chat),
-    path('massage/list/', massage_list),
+    path('massage/list/<int:pk>', massage_list),
     path('send/message/', send_message),
 ]

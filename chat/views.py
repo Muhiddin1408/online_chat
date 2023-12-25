@@ -118,7 +118,7 @@ def chat_list(request):
 @permission_classes([IsAuthenticated])
 def massage_list(request, pk):
     chat = Massage.objects.filter(chat_id=pk)
-    chat.order_by('-id')
+    chat.order_by('id')
     return Response(SerializerChat(chat, many=True).data)
 
 

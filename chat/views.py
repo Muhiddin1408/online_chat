@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from chat.models import User, Chat, Massage, Years
 from rest_framework import generics, filters
 from rest_framework.pagination import PageNumberPagination
-from .serializers import SerializerUser, SerializerChat, SerializerYears
+from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage
 
 
 @api_view(['POST'])
@@ -118,8 +118,8 @@ def chat_list(request):
 @permission_classes([IsAuthenticated])
 def massage_list(request, pk):
     chat = Massage.objects.filter(chat_id=pk)
-    chat.order_by('id')
-    return Response(SerializerChat(chat, many=True).data)
+    chat.order_by('-id')
+    return Response(SerializerMassage(chat, many=True).data)
 
 
 @api_view(['POST'])

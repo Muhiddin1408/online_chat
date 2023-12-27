@@ -31,13 +31,13 @@ def register(request):
                 lang=lang,
                 years_id=years,
                 choose_gen=choose_gen,
+                choose_years=choose_years[0],
                 gen=gen,
                 login_time=datetime.datetime.now()
             )
-            for i in choose_years:
-                number.choose_years.add(Years.objects.get(id=i))
-                number.save()
-            print(SerializerUser(number).data)
+            # for i in choose_years:
+            #     number.choose_years.add(Years.objects.get(id=i))
+            #     number.save()
             token = RefreshToken.for_user(number)
             result = {
                 'access': str(token.access_token),

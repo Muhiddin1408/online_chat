@@ -45,11 +45,13 @@ def register(request):
             }
             return Response(result, status=status.HTTP_200_OK)
         else:
-            res = {
-                'status': 0
+            token = RefreshToken.for_user(user)
+            result = {
+                'access': str(token.access_token),
+                'refresh': str(token),
             }
 
-            return Response(res, status=status.HTTP_200_OK)
+            return Response(result, status=status.HTTP_200_OK)
 
     except KeyError:
 
@@ -120,6 +122,14 @@ def massage_list(request, pk):
     chat = Massage.objects.filter(chat_id=pk)
     chat.order_by('-id')
     return Response(SerializerMassage(chat, many=True).data)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def chat_delete(request, pk):
+    chat = Chat.objects.get(id=pk)
+    chat.delete()
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

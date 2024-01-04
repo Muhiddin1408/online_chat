@@ -22,6 +22,7 @@ def register(request):
         choose_years = request.data.get('choose_years')
         choose_gen = request.data.get('choose_gen')
         gen = request.data.get('gen')
+        print(choose_years[0])
 
         user = User.objects.filter(username=ip)
         if not user:
@@ -31,7 +32,7 @@ def register(request):
                 lang=lang,
                 years_id=years,
                 choose_gen=choose_gen,
-                choose_years=choose_years[0],
+                choose_years_id=choose_years[0],
                 gen=gen,
                 login_time=datetime.datetime.now()
             )
@@ -45,7 +46,7 @@ def register(request):
             }
             return Response(result, status=status.HTTP_200_OK)
         else:
-            token = RefreshToken.for_user(user)
+            token = RefreshToken.for_user(user.last())
             result = {
                 'access': str(token.access_token),
                 'refresh': str(token),

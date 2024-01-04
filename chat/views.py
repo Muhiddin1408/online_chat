@@ -22,7 +22,6 @@ def register(request):
         choose_years = request.data.get('choose_years')
         choose_gen = request.data.get('choose_gen')
         gen = request.data.get('gen')
-        print(choose_years[0])
 
         user = User.objects.filter(username=ip)
         if not user:

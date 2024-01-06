@@ -2,12 +2,12 @@ import datetime
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from starlette import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from chat.models import User, Chat, Massage, Years
-from rest_framework import generics, filters
+from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage
 
@@ -52,9 +52,7 @@ def register(request):
             }
 
             return Response(result, status=status.HTTP_200_OK)
-
     except KeyError:
-
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
@@ -122,6 +120,15 @@ def massage_list(request, pk):
     chat = Massage.objects.filter(chat_id=pk)
     chat.order_by('-id')
     return Response(SerializerMassage(chat, many=True).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def last_login(request):
+    user = request.user
+    user.login_time = datetime.datetime.now()
+    user.save()
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])

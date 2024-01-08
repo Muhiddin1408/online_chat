@@ -1,4 +1,4 @@
-import datetime
+from datetime import timedelta, datetime
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -135,8 +135,35 @@ def last_login(request):
 @permission_classes([IsAuthenticated])
 def chat_delete(request, pk):
     chat = Chat.objects.get(id=pk)
-    chat.delete()
-    return Response(status=status.HTTP_200_OK)
+    chat.delete = False
+    chat.save()
+    return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def massage_read(request, pk):
+    chat = Massage.objects.get(id=pk)
+    chat.read = True
+    chat.save()
+    return Response(SerializerMassage(chat).data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def online(request):
+    datetime.timedelta()
+    user = User.objects.filter(login_time__date__range=[datetime.now() - timedelta(minutes=5), datetime.now()]).cost()
+    return Response({'online': user}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def writing(request, pk):
+    chat = Massage.objects.get(id=pk)
+    chat.read = True
+    chat.save()
+    return Response(SerializerMassage(chat).data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

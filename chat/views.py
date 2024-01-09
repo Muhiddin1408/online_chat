@@ -152,8 +152,7 @@ def massage_read(request, pk):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def online(request):
-    datetime.timedelta()
-    user = User.objects.filter(login_time__date__range=[datetime.now() - timedelta(minutes=5), datetime.now()]).cost()
+    user = User.objects.filter(login_time__date__range=[datetime.now() - timedelta(minutes=5), datetime.now()]).count()
     return Response({'online': user}, status=status.HTTP_200_OK)
 
 

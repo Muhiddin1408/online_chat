@@ -4,7 +4,7 @@ from .views import register, SearchUser, chat_list, create_chat, massage_list, s
 
 urlpatterns = [
     path('register', register),
-    path('register', online),
+    path('online', online),
     path('search/', SearchUser.as_view()),
     path('year/', YearView.as_view()),
     path('chat/list/', chat_list),

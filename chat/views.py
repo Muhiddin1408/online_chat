@@ -126,7 +126,7 @@ def massage_list(request, pk):
 @permission_classes([IsAuthenticated])
 def last_login(request):
     user = request.user
-    user.login_time = datetime.datetime.now()
+    user.login_time = datetime.now()
     user.save()
     return Response(status=status.HTTP_200_OK)
 

@@ -33,7 +33,7 @@ def register(request):
                 choose_gen=choose_gen,
                 choose_years_id=choose_years[0],
                 gen=gen,
-                login_time=datetime.datetime.now()
+                login_time=datetime.now()
             )
             # for i in choose_years:
             #     number.choose_years.add(Years.objects.get(id=i))
@@ -68,7 +68,7 @@ class SearchUser(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        product = User.objects.filter(years=user.choose_years,  gen=user.choose_gen)
+        product = User.objects.filter(lang=user.lang, years=user.choose_years,  gen=user.choose_gen, login_time__date__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
         serializer = SerializerUser(product, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)

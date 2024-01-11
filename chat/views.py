@@ -69,7 +69,9 @@ class SearchUser(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         print(datetime.now() - timedelta(minutes=5))
         user = request.user
-        product = User.objects.filter(lang=user.lang, years=user.choose_years,  gen=user.choose_gen, choose_gen=user.gen, choose_years=user.years, login_time__date__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
+        product = User.objects.filter(lang=user.lang, years=user.choose_years,  gen=user.choose_gen,
+                                      choose_gen=user.gen, choose_years=user.years,
+                                      login_time__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
         serializer = SerializerUser(product, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)

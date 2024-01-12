@@ -159,13 +159,19 @@ def online(request):
     return Response({'online': user}, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def writing(request, pk):
-    chat = Massage.objects.get(id=pk)
-    chat.read = True
-    chat.save()
-    return Response(SerializerMassage(chat).data, status=status.HTTP_200_OK)
+def writing(request):
+    chat = Chat.objects.get(id=request.data.get('id'))
+    if request.user == chat.create:
+        user_ip = chat.create2.ip
+    else:
+        user_ip = chat.create.ip
+    context = {
+        'user_ip': user_ip,
+        'method': request.data.get('method')
+    }
+    return Response(context, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -181,3 +187,5 @@ def send_message(request):
         user=user
     )
     return Response(status=status.HTTP_201_CREATED)
+
+

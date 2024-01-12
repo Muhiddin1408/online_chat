@@ -7,7 +7,7 @@ class SerializerUser(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ('id', 'ip')
 
 
 class SerializerYears(serializers.ModelSerializer):

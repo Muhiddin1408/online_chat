@@ -67,7 +67,6 @@ class SearchUser(generics.ListAPIView):
     pagination_class = SmallPagesPagination
 
     def get(self, request, *args, **kwargs):
-        print(datetime.now() - timedelta(minutes=5))
         user = request.user
         product = User.objects.filter(lang=user.lang, years=user.choose_years,  gen=user.choose_gen,
                                       choose_gen=user.gen, choose_years=user.years,

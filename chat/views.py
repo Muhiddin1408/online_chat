@@ -53,7 +53,7 @@ def register(request):
             user.lang = lang
             user.login_time = datetime.now()
             user.save()
-            token = RefreshToken.for_user(user.last())
+            token = RefreshToken.for_user(user)
             result = {
                 'access': str(token.access_token),
                 'refresh': str(token),

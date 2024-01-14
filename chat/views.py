@@ -45,6 +45,13 @@ def register(request):
             }
             return Response(result, status=status.HTTP_200_OK)
         else:
+            user.gen = gen
+            user.choose_gen = choose_gen
+            user.choose_years_id = choose_years[0]
+            user.years = years
+            user.lang = lang
+            user.login_time = datetime.now()
+            user.save()
             token = RefreshToken.for_user(user.last())
             result = {
                 'access': str(token.access_token),

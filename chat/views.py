@@ -45,6 +45,7 @@ def register(request):
             }
             return Response(result, status=status.HTTP_200_OK)
         else:
+            user = User.objects.get(username=ip)
             user.gen = gen
             user.choose_gen = choose_gen
             user.choose_years_id = choose_years[0]

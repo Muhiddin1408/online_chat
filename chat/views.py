@@ -49,7 +49,7 @@ def register(request):
             user.gen = gen
             user.choose_gen = choose_gen
             user.choose_years_id = choose_years[0]
-            user.years = years
+            user.years_id = years
             user.lang = lang
             user.login_time = datetime.now()
             user.save()

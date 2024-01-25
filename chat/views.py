@@ -179,15 +179,17 @@ def writing(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def writing(request):
-    chat = Chat.objects.get(id=request.data.get('id'))
+def writingid(request, pk):
+    chat = Chat.objects.get(id=pk)
     if request.user == chat.create:
         user_ip = chat.create2.ip
+        user_id = chat.create2.writing
     else:
         user_ip = chat.create.ip
+        user_id = chat.create.writing
     context = {
         'user_ip': user_ip,
-        'method': chat.create.writing
+        'method': user_id
     }
     return Response(context, status=status.HTTP_200_OK)
 

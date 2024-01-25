@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register, SearchUser, chat_list, create_chat, massage_list, send_message, YearView, chat_delete, \
-    last_login, massage_read, online, writing
+    last_login, massage_read, online, writing, writingid
 
 urlpatterns = [
     path('register', register),
@@ -15,4 +15,5 @@ urlpatterns = [
     path('login/time/', last_login),
     path('send/message/', send_message),
     path('writing/', writing),
+    path('writing/<int:pk>', writingid),
 ]

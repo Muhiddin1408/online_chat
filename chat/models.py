@@ -27,6 +27,7 @@ class User(AbstractUser):
     login_time = models.DateTimeField(blank=True, null=True)
     years = models.ForeignKey(Years, on_delete=models.CASCADE, related_name='years', blank=True, null=True)
     choose_years = models.ForeignKey(Years, on_delete=models.CASCADE, related_name='choose_years', blank=True, null=True)
+    writing = models.BooleanField(default=False)
 
 
 class Chat(models.Model):

@@ -57,6 +57,7 @@ def register(request):
             result = {
                 'access': str(token.access_token),
                 'refresh': str(token),
+                'id': user.id,
             }
 
             return Response(result, status=status.HTTP_200_OK)
@@ -169,6 +170,16 @@ def online(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def writing(request):
+    if request.data.get('method') == 'write':
+        request.user.writing = True
+    else:
+        request.user.writing = False
+    return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def writing(request):
     chat = Chat.objects.get(id=request.data.get('id'))
     if request.user == chat.create:
         user_ip = chat.create2.ip
@@ -176,7 +187,7 @@ def writing(request):
         user_ip = chat.create.ip
     context = {
         'user_ip': user_ip,
-        'method': request.data.get('method')
+        'method': chat.create.writing
     }
     return Response(context, status=status.HTTP_200_OK)
 

@@ -42,6 +42,7 @@ def register(request):
             result = {
                 'access': str(token.access_token),
                 'refresh': str(token),
+                'id': number.id,
             }
             return Response(result, status=status.HTTP_200_OK)
         else:

@@ -173,8 +173,10 @@ def online(request):
 def writing(request):
     if request.data.get('method') == 'write':
         request.user.writing = True
+        request.user.save()
     else:
         request.user.writing = False
+        request.user.save()
     return Response(status=status.HTTP_200_OK)
 
 

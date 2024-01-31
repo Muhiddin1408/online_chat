@@ -31,13 +31,13 @@ def register(request):
                 lang=lang,
                 years_id=years,
                 choose_gen=choose_gen,
-                choose_years_id=choose_years[0],
+                # choose_years_id=choose_years[0],
                 gen=gen,
                 login_time=datetime.now()
             )
-            # for i in choose_years:
-            #     number.choose_years.add(Years.objects.get(id=i))
-            #     number.save()
+            for i in choose_years:
+                number.choose_years.add(Years.objects.get(id=i))
+                number.save()
             token = RefreshToken.for_user(number)
             result = {
                 'access': str(token.access_token),
@@ -78,7 +78,10 @@ class SearchUser(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        product = User.objects.filter(lang=user.lang, years=user.choose_years,  gen=user.choose_gen,
+        print(SerializerUser(user).data)
+        print((user.choose_years.all()))
+
+        product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),  gen=user.choose_gen,
                                       choose_gen=user.gen, choose_years=user.years,
                                       login_time__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
         serializer = SerializerUser(product, many=True)

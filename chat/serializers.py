@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from chat.models import User, Chat, Massage, Years
+from chat.models import User, Chat, Massage, Years, Apartment
 
 
 class SerializerUser(serializers.ModelSerializer):
@@ -28,4 +28,11 @@ class SerializerMassage(serializers.ModelSerializer):
 
     class Meta:
         model = Massage
+        fields = '__all__'
+
+
+class ApartmentMassage(serializers.ModelSerializer):
+
+    class Meta:
+        model = Apartment
         fields = '__all__'

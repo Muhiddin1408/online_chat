@@ -6,10 +6,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from starlette import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from chat.models import User, Chat, Massage, Years
+from chat.models import User, Chat, Massage, Years, Apartment
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
-from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage
+from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage, ApartmentMassage
 
 
 @api_view(['POST'])
@@ -215,3 +215,6 @@ def send_message(request):
     return Response(status=status.HTTP_201_CREATED)
 
 
+def file(request):
+    files = Apartment.objects.get(id=1)
+    return Response(ApartmentMassage(files).data)

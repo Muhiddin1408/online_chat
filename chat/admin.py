@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from chat.models import User, Chat, Years, Massage
+from chat.models import User, Chat, Years, Massage, Apartment
 
 # Register your models here.
 

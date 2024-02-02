@@ -219,5 +219,4 @@ def send_message(request):
 @permission_classes([AllowAny])
 def file(request):
     files = Apartment.objects.get(id=1)
-    print(ApartmentMassage(files).data)
     return Response(ApartmentMassage(files).data)

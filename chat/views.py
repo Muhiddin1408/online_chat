@@ -215,6 +215,9 @@ def send_message(request):
     return Response(status=status.HTTP_201_CREATED)
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def file(request):
     files = Apartment.objects.get(id=1)
-    return Response(ApartmentMassage(files).data, status=status.HTTP_200_OK)
+    print(ApartmentMassage(files).data)
+    return Response(ApartmentMassage(files).data)

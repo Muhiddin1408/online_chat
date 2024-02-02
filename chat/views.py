@@ -217,4 +217,4 @@ def send_message(request):
 
 def file(request):
     files = Apartment.objects.get(id=1)
-    return Response(ApartmentMassage(files).data)
+    return Response(ApartmentMassage(files).data, status=status.HTTP_200_OK)

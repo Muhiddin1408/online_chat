@@ -80,8 +80,12 @@ class SearchUser(generics.ListAPIView):
         user = request.user
         print(SerializerUser(user).data)
         print((user.choose_years.all()))
-
-        product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),  gen=user.choose_gen,
+        if user.choose_gen == 'all':
+            product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),
+                                      choose_gen=user.gen, choose_years=user.years,
+                                      login_time__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
+        else:
+            product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),  gen=user.choose_gen,
                                       choose_gen=user.gen, choose_years=user.years,
                                       login_time__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
         serializer = SerializerUser(product, many=True)

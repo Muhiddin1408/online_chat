@@ -78,8 +78,6 @@ class SearchUser(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        print(SerializerUser(user).data)
-        print((user.choose_years.all()))
         if user.choose_gen == 'all':
             product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),
                                       choose_gen=user.gen, choose_years=user.years,

@@ -49,11 +49,19 @@ def register(request):
             user = User.objects.get(username=ip)
             user.gen = gen
             user.choose_gen = choose_gen
-            user.choose_years_id = choose_years[0]
             user.years_id = years
             user.lang = lang
             user.login_time = datetime.now()
             user.save()
+            token = RefreshToken.for_user(user)
+            result = {
+                'access': str(token.access_token),
+                'refresh': str(token),
+                'id': user.id,
+            }
+            for i in choose_years:
+                user.choose_years.add(Years.objects.get(id=i))
+                user.save()
             token = RefreshToken.for_user(user)
             result = {
                 'access': str(token.access_token),

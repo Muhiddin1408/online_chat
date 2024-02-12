@@ -160,9 +160,14 @@ def last_login(request):
 @permission_classes([IsAuthenticated])
 def chat_delete(request, pk):
     chat = Chat.objects.get(id=pk)
-    chat.delete = False
-    chat.save()
-    return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
+
+    if chat.deletes == True:
+        chat.deletes = False
+        chat.save()
+        return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
+    else:
+        chat.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

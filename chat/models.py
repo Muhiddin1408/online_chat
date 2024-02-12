@@ -35,7 +35,7 @@ class Chat(models.Model):
     create = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create')
     create2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create2')
     updated_at = models.DateTimeField(blank=True, null=True)
-    delete = models.BooleanField(default=True)
+    deletes = models.BooleanField(default=True)
 
 
 class Massage(models.Model):

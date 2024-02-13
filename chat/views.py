@@ -111,7 +111,7 @@ class SearchUser(generics.ListAPIView):
             return Response(context, status=status.HTTP_200_OK)
         else:
             chat_create = Chat.objects.create(
-                name=user.ip,
+                chat_name=user.ip,
                 create=user,
                 updated_at=datetime.now(),
             )

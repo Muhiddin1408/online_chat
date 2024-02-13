@@ -33,9 +33,10 @@ class User(AbstractUser):
 class Chat(models.Model):
     chat_name = models.CharField(max_length=123)
     create = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create')
-    create2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create2')
+    create2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create2', blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     deletes = models.BooleanField(default=True)
+    free = models.BooleanField(default=True)
 
 
 class Massage(models.Model):

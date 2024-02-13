@@ -87,16 +87,43 @@ class SearchUser(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         user = request.user
         if user.choose_gen == 'all':
-            product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),
-                                      choose_gen=user.gen, choose_years=user.years,
-                                      login_time__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
+            search = Chat.objects.filter(create__lang=user.lang, create__years__in=user.choose_years.all(),
+                                         create__choose_gen=user.gen, create__choose_years=user.years,
+                                         create__login_time__range=[datetime.now() -
+                                                                    timedelta(minutes=5), datetime.now()], free=True)
         else:
-            product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),  gen=user.choose_gen,
-                                      choose_gen=user.gen, choose_years=user.years,
-                                      login_time__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
-        serializer = SerializerUser(product, many=True)
-        page = self.paginate_queryset(serializer.data)
-        return self.get_paginated_response(page)
+            search = Chat.objects.filter(create__lang=user.lang, create__years__in=user.choose_years.all(),
+                                         create__choose_gen=user.gen, create__gen=user.choose_gen,
+                                         create__choose_years=user.years,
+                                         create__login_time__range=[datetime.now() -
+                                                                    timedelta(minutes=5), datetime.now()], free=True)
+
+        if search:
+            result = search.last()
+            result.create2 = user
+            result.free = False
+            result.save()
+            context = {
+                'chat_id': result.id,
+                'user_1': result.create.ip,
+                'user_2': result.create2.ip,
+            }
+            return Response(context, status=status.HTTP_200_OK)
+        else:
+            chat_create = Chat.objects.create(
+                name=user.ip,
+                create=user,
+                updated_at=datetime.now(),
+            )
+            return Response(status=status.HTTP_200_OK)
+
+        # else:
+        #     product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),  gen=user.choose_gen,
+        #                               choose_gen=user.gen, choose_years=user.years,
+        #                               login_time__range=[datetime.now() - timedelta(minutes=5), datetime.now()])
+        # serializer = SerializerUser(product, many=True)
+        # page = self.paginate_queryset(serializer.data)
+        # return self.get_paginated_response(page)
 
 
 class YearView(generics.ListAPIView):
@@ -123,6 +150,7 @@ def create_chat(request):
     chat = Chat.objects.create(
         create_id=user,
         create2=user2,
+        updated_at=datetime.now()
     )
     context = {
         "id": chat.id
@@ -182,8 +210,8 @@ def massage_read(request, pk):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def online(request):
-    user = User.objects.filter(login_time__date__range=[datetime.now() - timedelta(minutes=5), datetime.now()]).count()
-    return Response({'online': user}, status=status.HTTP_200_OK)
+    user = Chat.objects.filter(free=False).count()
+    return Response({'online': user*2}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

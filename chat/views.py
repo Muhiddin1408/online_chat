@@ -46,29 +46,26 @@ def register(request):
             }
             return Response(result, status=status.HTTP_200_OK)
         else:
-            user = User.objects.get(username=ip)
-            user.gen = gen
-            user.choose_gen = choose_gen
-            user.years_id = years
-            user.lang = lang
-            user.login_time = datetime.now()
-            user.save()
-            token = RefreshToken.for_user(user)
-            result = {
-                'access': str(token.access_token),
-                'refresh': str(token),
-                'id': user.id,
-            }
+            user = User.objects.get(username=ip).delete()
+            number = User.objects.create(
+                username=ip,
+                ip=ip,
+                lang=lang,
+                years_id=years,
+                choose_gen=choose_gen,
+                # choose_years_id=choose_years[0],
+                gen=gen,
+                login_time=datetime.now()
+            )
             for i in choose_years:
-                user.choose_years.add(Years.objects.get(id=i))
-                user.save()
-            token = RefreshToken.for_user(user)
+                number.choose_years.add(Years.objects.get(id=i))
+                number.save()
+            token = RefreshToken.for_user(number)
             result = {
                 'access': str(token.access_token),
                 'refresh': str(token),
-                'id': user.id,
+                'id': number.id,
             }
-
             return Response(result, status=status.HTTP_200_OK)
     except KeyError:
         return Response(status=status.HTTP_404_NOT_FOUND)

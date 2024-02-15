@@ -98,7 +98,7 @@ class SearchUser(generics.ListAPIView):
         if search.create__choose_gen == 'all':
             search1 = search
         else:
-            search1 = search.filter(create__choose_gen=user.gen,)
+            search1 = search.filter(create__choose_gen=user.gen)
 
         if search1:
             result = search.last()

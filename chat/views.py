@@ -141,6 +141,14 @@ class YearView(generics.ListAPIView):
         return self.get_paginated_response(page)
 
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_chat(request, pk):
+    chat = Chat.objects.get(id=pk)
+    chat.delete()
+    return Response(status=status.HTTP_200_OK)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_chat(request):

@@ -95,23 +95,22 @@ class SearchUser(generics.ListAPIView):
                                          create__choose_years=user.years,
                                          create__login_time__range=[datetime.now() -
                                                                     timedelta(minutes=5), datetime.now()], free=True)
-        if search.create__choose_gen == 'all':
-            search1 = search
-        else:
-            search1 = search.filter(create__choose_gen=user.gen)
 
-        if search1:
-            result = search.last()
-            result.create2 = user
-            result.free = False
-            result.save()
-            context = {
-                'chat_id': result.id,
-                'user_1': result.create.ip,
-                'user_2': result.create2.ip,
-            }
-            return Response(context, status=status.HTTP_200_OK)
+        if search:
+            for i in search:
+                if i.create.choose_gen == 'all' or i.create.choose_gen == user.gen:
+                    result = search.last()
+                    result.create2 = user
+                    result.free = False
+                    result.save()
+                    context = {
+                        'chat_id': result.id,
+                        'user_1': result.create.ip,
+                        'user_2': result.create2.ip,
+                    }
+                    return Response(context, status=status.HTTP_200_OK)
         else:
+            print('create1')
             chat_create = Chat.objects.create(
                 chat_name=user.ip,
                 create=user,

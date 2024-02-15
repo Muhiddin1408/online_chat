@@ -85,17 +85,22 @@ class SearchUser(generics.ListAPIView):
         user = request.user
         if user.choose_gen == 'all':
             search = Chat.objects.filter(create__lang=user.lang, create__years__in=user.choose_years.all(),
-                                         create__choose_gen=user.gen, create__choose_years=user.years,
-                                         create__login_time__range=[datetime.now() -
-                                                                    timedelta(minutes=5), datetime.now()], free=True)
-        else:
-            search = Chat.objects.filter(create__lang=user.lang, create__years__in=user.choose_years.all(),
-                                         create__choose_gen=user.gen, create__gen=user.choose_gen,
                                          create__choose_years=user.years,
                                          create__login_time__range=[datetime.now() -
                                                                     timedelta(minutes=5), datetime.now()], free=True)
 
-        if search:
+        else:
+            search = Chat.objects.filter(create__lang=user.lang, create__years__in=user.choose_years.all(),
+                                         create__gen=user.choose_gen,
+                                         create__choose_years=user.years,
+                                         create__login_time__range=[datetime.now() -
+                                                                    timedelta(minutes=5), datetime.now()], free=True)
+        if search.create__choose_gen == 'all':
+            search1 = search
+        else:
+            search1 = search.filter(create__choose_gen=user.gen,)
+
+        if search1:
             result = search.last()
             result.create2 = user
             result.free = False

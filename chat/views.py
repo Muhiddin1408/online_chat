@@ -279,9 +279,10 @@ def file(request):
 import mammoth as mth
 def html(request):
 
-    pdf = Apartment.objects.all().last()
-    print(pdf.file.url)
-    with open(f'http://127.0.0.1:8000{pdf.file.url}', "rb") as docx_file:
-        result = mth.convert_to_html(docx_file)
-    with open('posts.html', 'w', encoding='utf-8') as htmlfile:
-        htmlfile.write(result.value)
+    # pdf = Apartment.objects.all().last()
+    # print(pdf.file.url)
+    # with open(f'http://127.0.0.1:8000{pdf.file.url}', "rb") as docx_file:
+    #     result = mth.convert_to_html(docx_file)
+    # with open('posts.html', 'w', encoding='utf-8') as htmlfile:
+    #     htmlfile.write(result.value)
+    return render(request, 'post.html')

@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from starlette import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from chat.models import User, Chat, Massage, Years, Apartment
+from chat.models import User, Chat, Massage, Years, Apartment, Privacy
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage, ApartmentMassage
@@ -276,13 +276,9 @@ def file(request):
     return Response(ApartmentMassage(files).data)
 
 
-import mammoth as mth
 def html(request):
-
-    # pdf = Apartment.objects.all().last()
-    # print(pdf.file.url)
-    # with open(f'http://127.0.0.1:8000{pdf.file.url}', "rb") as docx_file:
-    #     result = mth.convert_to_html(docx_file)
-    # with open('posts.html', 'w', encoding='utf-8') as htmlfile:
-    #     htmlfile.write(result.value)
-    return render(request, 'post.html')
+    privacy = Privacy.objects.all()
+    context = {
+        "privacy": privacy,
+    }
+    return render(request, 'post.html', context=context)

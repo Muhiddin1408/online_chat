@@ -49,3 +49,7 @@ class Massage(models.Model):
 
 class Apartment(models.Model):
     file = models.FileField(upload_to='file')
+
+
+class Privacy(models.Model):
+    text = models.TextField()

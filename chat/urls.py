@@ -18,5 +18,5 @@ urlpatterns = [
     path('writing/', writing),
     path('file/', file),
     path('writing/<int:pk>', writingid),
-    path('html', html),
+    path('privacy', html),
 ]

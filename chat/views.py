@@ -118,7 +118,7 @@ class SearchUser(generics.ListAPIView):
                 create=user,
                 updated_at=datetime.now(),
             )
-            return Response(status=status.HTTP_200_OK)
+            return Response({'chat_id': chat_create.id}, status=status.HTTP_200_OK)
 
         # else:
         #     product = User.objects.filter(lang=user.lang, years__in=user.choose_years.all(),  gen=user.choose_gen,

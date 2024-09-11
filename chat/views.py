@@ -1,73 +1,70 @@
-from datetime import timedelta, datetime
-
-from docx import Document
-from django.http import HttpResponseRedirect, HttpResponse
+from datetime import timedelta
+from django.utils import timezone
 from django.shortcuts import render
-from django.urls import reverse_lazy
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from starlette import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from chat.models import User, Chat, Massage, Years, Apartment, Privacy
+from chat.models import ReportTheme, User, Chat, Massage, Years, Apartment, Privacy
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
-from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage, ApartmentMassage
-
+from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage, ApartmentMassage, SpamThemeSerializer, UserSpamSerializer
+from chat.tasks import check_restricted_word
 
 @api_view(['POST'])
 @permission_classes([AllowAny, ])
 def register(request):
     try:
         ip = request.data.get('ip')
-        lang = request.data.get('lang')
+        language = request.data.get('lang')
         years = request.data.get('years')
-        choose_years = request.data.get('choose_years')
-        choose_gen = request.data.get('choose_gen')
-        gen = request.data.get('gen')
+        target_years = request.data.get('choose_years')
+        target_gender = request.data.get('choose_gen')
+        gender = request.data.get('gen')
 
         user = User.objects.filter(username=ip)
         if not user:
-            number = User.objects.create(
+            user = User.objects.create(
                 username=ip,
                 ip=ip,
-                lang=lang,
+                language=language,
                 years_id=years,
-                choose_gen=choose_gen,
+                target_gender=target_gender,
                 # choose_years_id=choose_years[0],
-                gen=gen,
-                login_time=datetime.now()
+                gender=gender,
+                login_time=timezone.now()
             )
-            for i in choose_years:
-                number.choose_years.add(Years.objects.get(id=i))
-                number.save()
-            token = RefreshToken.for_user(number)
+            for year in target_years:
+                user.target_years.add(Years.objects.get(id=year))
+                user.save()
+            token = RefreshToken.for_user(user)
             result = {
                 'access': str(token.access_token),
                 'refresh': str(token),
-                'id': number.id,
+                'id': user.id,
             }
             return Response(result, status=status.HTTP_200_OK)
         else:
-            user = User.objects.get(username=ip).delete()
-            number = User.objects.create(
+            User.objects.get(username=ip).delete()
+            user = User.objects.create(
                 username=ip,
                 ip=ip,
-                lang=lang,
+                language=language,
                 years_id=years,
-                choose_gen=choose_gen,
+                target_gender=target_gender,
                 # choose_years_id=choose_years[0],
-                gen=gen,
-                login_time=datetime.now()
+                gender=gender,
+                login_time=timezone.now()
             )
-            for i in choose_years:
-                number.choose_years.add(Years.objects.get(id=i))
-                number.save()
-            token = RefreshToken.for_user(number)
+            for year in target_years:
+                user.target_years.add(Years.objects.get(id=year))
+                user.save()
+            token = RefreshToken.for_user(user)
             result = {
                 'access': str(token.access_token),
                 'refresh': str(token),
-                'id': number.id,
+                'id': user.id,
             }
             return Response(result, status=status.HTTP_200_OK)
     except KeyError:
@@ -86,37 +83,37 @@ class SearchUser(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        if user.choose_gen == 'all':
-            search = Chat.objects.filter(create__lang=user.lang, create__years__in=user.choose_years.all(),
-                                         create__choose_years=user.years,
-                                         create__login_time__range=[datetime.now() -
-                                                                    timedelta(minutes=5), datetime.now()], free=True)
+        if user.target_gender == 'all':
+            search = Chat.objects.filter(sender__language=user.language, sender__years__in=user.target_years.all(),
+                                         sender__target_years=user.years,
+                                         sender__login_time__range=[timezone.now() -
+                                                                    timedelta(minutes=5), timezone.now()], free=True)
 
         else:
-            search = Chat.objects.filter(create__lang=user.lang, create__years__in=user.choose_years.all(),
-                                         create__gen=user.choose_gen,
-                                         create__choose_years=user.years,
-                                         create__login_time__range=[datetime.now() -
-                                                                    timedelta(minutes=5), datetime.now()], free=True)
+            search = Chat.objects.filter(sender__language=user.language, sender__years__in=user.target_years.all(),
+                                         sender__gender=user.target_gender,
+                                         sender__target_years=user.years,
+                                         sender__login_time__range=[timezone.now() -
+                                                                    timedelta(minutes=5), timezone.now()], free=True)
 
         if search:
             for i in search:
-                if i.create.choose_gen == 'all' or i.create.choose_gen == user.gen:
+                if i.sender.target_gender == 'all' or i.sender.target_gender == user.gender:
                     result = search.last()
-                    result.create2 = user
+                    result.receiver = user
                     result.free = False
                     result.save()
                     context = {
                         'chat_id': result.id,
-                        'user_1': result.create.ip,
-                        'user_2': result.create2.ip,
+                        'user_1': result.sender.ip,
+                        'user_2': result.receiver.ip,
                     }
                     return Response(context, status=status.HTTP_200_OK)
         else:
             chat_create = Chat.objects.create(
-                chat_name=user.ip,
-                create=user,
-                updated_at=datetime.now(),
+                name=user.ip,
+                sender=user,
+                updated_at=timezone.now(),
             )
             return Response({'chat_id': chat_create.id}, status=status.HTTP_200_OK)
 
@@ -146,8 +143,8 @@ class YearView(generics.ListAPIView):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_chat(request, pk):
-    chat = Chat.objects.get(id=pk)
-    chat.delete()
+    # chat = Chat.objects.get(id=pk)
+    # chat.delete()
     return Response(status=status.HTTP_200_OK)
 
 
@@ -155,13 +152,13 @@ def delete_chat(request, pk):
 @permission_classes([IsAuthenticated])
 def create_chat(request):
     data = request.data
-    user_id = data.get('id')
-    user = request.user.id
-    user2 = User.objects.get(id=user_id)
+    receiver_id = data.get('id')
+    user = request.user
+    receiver = User.objects.get(id=receiver_id)
     chat = Chat.objects.create(
-        create_id=user,
-        create2=user2,
-        updated_at=datetime.now()
+        sender=user,
+        receiver=receiver,
+        updated_at=timezone.now()
     )
     context = {
         "id": chat.id
@@ -173,7 +170,7 @@ def create_chat(request):
 @permission_classes([IsAuthenticated])
 def chat_list(request):
     user = request.user
-    chat = Chat.objects.filter(create=user) | Chat.objects.filter(create2=user)
+    chat = Chat.objects.filter(sender=user) | Chat.objects.filter(receiver=user)
     chat.order_by('id').values()
     return Response(SerializerChat(chat, many=True).data)
 
@@ -190,7 +187,7 @@ def massage_list(request, pk):
 @permission_classes([IsAuthenticated])
 def last_login(request):
     user = request.user
-    user.login_time = datetime.now()
+    user.login_time = timezone.now()
     user.save()
     return Response(status=status.HTTP_200_OK)
 
@@ -200,12 +197,11 @@ def last_login(request):
 def chat_delete(request, pk):
     chat = Chat.objects.get(id=pk)
 
-    if chat.deletes == True:
-        chat.deletes = False
+    if chat.is_deleted == False:
+        chat.is_deleted == True
         chat.save()
         return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
     else:
-        chat.delete()
         return Response(status=status.HTTP_200_OK)
 
 
@@ -213,7 +209,7 @@ def chat_delete(request, pk):
 @permission_classes([IsAuthenticated])
 def massage_read(request, pk):
     chat = Massage.objects.get(id=pk)
-    chat.read = True
+    chat.is_read = True
     chat.save()
     return Response(SerializerMassage(chat).data, status=status.HTTP_200_OK)
 
@@ -230,10 +226,9 @@ def online(request):
 def writing(request):
     if request.data.get('method') == 'write':
         request.user.writing = True
-        request.user.save()
     else:
         request.user.writing = False
-        request.user.save()
+    request.user.save()
     return Response(status=status.HTTP_200_OK)
 
 
@@ -241,12 +236,12 @@ def writing(request):
 @permission_classes([IsAuthenticated])
 def writingid(request, pk):
     chat = Chat.objects.get(id=pk)
-    if request.user == chat.create:
-        user_ip = chat.create2.ip
-        user_id = chat.create2.writing
+    if request.user == chat.sender:
+        user_ip = chat.receiver.ip
+        user_id = chat.receiver.writing
     else:
-        user_ip = chat.create.ip
-        user_id = chat.create.writing
+        user_ip = chat.sender.ip
+        user_id = chat.sender.writing
     context = {
         'user_ip': user_ip,
         'method': user_id
@@ -266,6 +261,7 @@ def send_message(request):
         chat_id=chat_id,
         user=user
     )
+    check_restricted_word.delay(message=massage, user_id=user.id, chat_id=chat_id)
     return Response(status=status.HTTP_201_CREATED)
 
 
@@ -282,3 +278,25 @@ def html(request):
         "privacy": privacy,
     }
     return render(request, 'post.html', context=context)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def report_themes(request):
+    themes = ReportTheme.objects.filter(is_active=True)
+    serializer = SpamThemeSerializer(themes, many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def report_user(request):
+    data = request.data
+    data['reporter_id'] = request.user.id
+    serializer = UserSpamSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+    
+    return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import register, SearchUser, chat_list, create_chat, massage_list, send_message, YearView, chat_delete, \
-    last_login, massage_read, online, writing, writingid, file, delete_chat, html
+from .views import (
+    YearView, SearchUser, register, chat_list, create_chat, massage_list, send_message,
+    chat_delete, last_login, massage_read, online, writing, writingid,
+    file, delete_chat, html, report_themes, report_user)
 
 urlpatterns = [
     path('register', register),
@@ -19,4 +21,6 @@ urlpatterns = [
     path('file/', file),
     path('writing/<int:pk>', writingid),
     path('privacy', html),
+    path('report_theme/list/', report_themes),
+    path('report/user', report_user)
 ]

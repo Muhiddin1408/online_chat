@@ -15,3 +15,4 @@ venv
 migrations
 .env
 env
+migrations/

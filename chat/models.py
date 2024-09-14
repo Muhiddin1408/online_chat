@@ -136,7 +136,7 @@ class UserBlock(BaseModel):
 
 
 class RestrictedWord(BaseModel):
-    title = models.CharField(max_length=64, null=True, blank=True)
+    title = models.CharField(max_length=64)
 
     def __str__(self) -> str:
         return self.title

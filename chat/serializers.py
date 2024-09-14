@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from chat.models import ReportTheme, User, Chat, Massage, UserReport, Years, Apartment
+from chat.models import ReportTheme, User, Chat, Massage, UserBlock, UserReport, Years, Apartment
 
 
 class SerializerUser(serializers.ModelSerializer):
@@ -80,3 +80,24 @@ class UserSpamSerializer(serializers.ModelSerializer):
             reason=reason)
 
         return report
+
+
+class UserInformationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ReportTheme
+        fields = '__all__'
+
+
+class UserBlockResponseSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = UserBlock
+        fields = ("is_active", "blocked_until", "reason")
+
+
+class UserReponseSerializer(serializers.ModelSerializer):
+    block = UserBlockResponseSerializer()
+    class Meta:
+        model = User
+        fields = ("id", "username", "gender", "years", "ip", "language", "block")

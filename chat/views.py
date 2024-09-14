@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from chat.models import ReportTheme, User, Chat, Massage, Years, Apartment, Privacy
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
-from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage, ApartmentMassage, SpamThemeSerializer, UserSpamSerializer
+from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage, ApartmentMassage, SpamThemeSerializer, UserReponseSerializer, UserSpamSerializer
 from chat.tasks import check_restricted_word
 
 @api_view(['POST'])
@@ -300,3 +300,9 @@ def report_user(request):
     
     return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getMe(request):
+    serializer = UserReponseSerializer(instance=request.user)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)

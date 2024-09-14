@@ -11,6 +11,9 @@ class Years(models.Model):
     start = models.IntegerField()
     end = models.IntegerField()
 
+    def __str__(self) -> str:
+        return f"{self.start} - {self.end}"
+
 
 class User(AbstractUser):
 
@@ -133,7 +136,7 @@ class UserBlock(BaseModel):
 
 
 class RestrictedWord(BaseModel):
-    title = models.CharField(max_length=64)
+    title = models.CharField(max_length=64, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.title

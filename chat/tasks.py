@@ -1,6 +1,7 @@
 from celery import shared_task
 from chat.models import Chat, RestrictedWord, User, UserBlock, UserReport, ReportTheme
 from conf.cache.redis import RedisCache
+from django.db import IntegrityError
 
 @shared_task
 def check_restricted_word(message: str, user_id: int, chat_id: int):
@@ -18,11 +19,12 @@ def check_restricted_word(message: str, user_id: int, chat_id: int):
                     reporter=reporter, user=user, chat=chat,
                     theme=theme, reason=reason)
                 user_abusive_words = RedisCache.get(key=f"user_{user.id}")
+                print(user_abusive_words)
                 if user_abusive_words:
                     RedisCache.set(f"user_{user.id}", value=int(user_abusive_words) + 1)
                 else:
                     RedisCache.set(f"user_{user.id}", value=1)
-                if user_abusive_words and int(user_abusive_words) == 10:
+                if user_abusive_words and int(user_abusive_words) >= 10:
                     user_block = UserBlock.objects.get_or_create(
                         id=user.id,
                         defaults={
@@ -31,7 +33,5 @@ def check_restricted_word(message: str, user_id: int, chat_id: int):
                     )[0]
                     user_block.ban_user(reason=reason, banned_by=reporter)
                     RedisCache.set(f"user_{user.id}", value=1)
-
                 return True
-            
     return False

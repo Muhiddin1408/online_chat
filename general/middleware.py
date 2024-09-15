@@ -12,7 +12,7 @@ class UserBlockChecknMiddleware:
         if request.user.is_superuser:
             response = self.get_response(request)
             return response
-        if request.method == "/me/" or request.path == "/register/" or request.path == "/admin/login/?next=/admin/":
+        if request.method == "GET":
             response = self.get_response(request)
             return response
         else:
@@ -30,7 +30,10 @@ class UserBlockChecknMiddleware:
                         "reason": user.block.reason
                         })
             except Exception:
-                return JsonResponse(data={
-                    "message": "Unauthorized",
-                    "status": 401
-                })
+                response = self.get_response(request)
+                return response
+                # print(request.user)
+                # return JsonResponse(data={
+                #     "message": "Unauthorized",
+                #     "status": 401
+                # })

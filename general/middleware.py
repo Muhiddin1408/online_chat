@@ -12,7 +12,7 @@ class UserBlockChecknMiddleware:
         if request.user.is_superuser:
             response = self.get_response(request)
             return response
-        if request.path == "/me/" or request.path == "/register/":
+        if request.path == "/me/" or request.path == "/register/" or request.path == "/admin/":
             response = self.get_response(request)
             return response
         else:

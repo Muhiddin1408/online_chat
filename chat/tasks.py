@@ -19,7 +19,6 @@ def check_restricted_word(message: str, user_id: int, chat_id: int):
                     reporter=reporter, user=user, chat=chat,
                     theme=theme, reason=reason)
                 user_abusive_words = RedisCache.get(key=f"user_{user.id}")
-                print(user_abusive_words)
                 if user_abusive_words:
                     RedisCache.set(f"user_{user.id}", value=int(user_abusive_words) + 1)
                 else:

@@ -5,8 +5,8 @@ from .views import (
     file, delete_chat, html, report_themes, report_user)
 
 urlpatterns = [
-    path('register', register),
-    path('online', online),
+    path('register/', register),
+    path('online/', online),
     path('search/', SearchUser.as_view()),
     path('year/', YearView.as_view()),
     path('chat/list/', chat_list),
@@ -20,8 +20,8 @@ urlpatterns = [
     path('writing/', writing),
     path('file/', file),
     path('writing/<int:pk>', writingid),
-    path('privacy', html),
+    path('privacy/', html),
     path('report_theme/list/', report_themes),
-    path('report/user', report_user),
+    path('report/user/', report_user),
     path('me/', getMe)
 ]

@@ -17,11 +17,11 @@ from chat.tasks import check_restricted_word
 def register(request):
     try:
         ip = request.data.get('ip')
-        language = request.data.get('lang')
+        language = request.data.get('language')
         years = request.data.get('years')
-        target_years = request.data.get('choose_years')
-        target_gender = request.data.get('choose_gen')
-        gender = request.data.get('gen')
+        target_years = request.data.get('target_years')
+        target_gender = request.data.get('target_gender')
+        gender = request.data.get('gender')
 
         user = User.objects.filter(username=ip)
         if not user:
@@ -254,14 +254,14 @@ def writingid(request, pk):
 def send_message(request):
     data = request.data
     chat_id = data.get('id')
-    massage = data.get('massage')
+    message = data.get('message')
     user = request.user
     Massage.objects.create(
-        massage=massage,
+        message=message,
         chat_id=chat_id,
         user=user
     )
-    check_restricted_word.delay(message=massage, user_id=user.id, chat_id=chat_id)
+    check_restricted_word.delay(message=message, user_id=user.id, chat_id=chat_id)
     return Response(status=status.HTTP_201_CREATED)
 
 

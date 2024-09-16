@@ -57,13 +57,13 @@ class Chat(models.Model):
 
 class Massage(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
-    massage = models.TextField()
+    message = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     is_read = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.chat} | {self.user} | {self.massage} | {self.is_read}"
+        return f"{self.chat} | {self.user} | {self.message} | {self.is_read}"
 
 
 class Apartment(models.Model):

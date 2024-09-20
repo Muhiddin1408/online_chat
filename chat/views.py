@@ -197,8 +197,8 @@ def last_login(request):
 def chat_delete(request, pk):
     chat = Chat.objects.get(id=pk)
 
-    if chat.is_deleted == False:
-        chat.is_deleted == True
+    if chat.is_deleted == True:
+        chat.is_deleted == False
         chat.save()
         return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
     else:

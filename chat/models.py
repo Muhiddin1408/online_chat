@@ -47,7 +47,7 @@ class Chat(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver',
                                  blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=True)
     free = models.BooleanField(default=True)
 
     def __str__(self) -> str:

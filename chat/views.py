@@ -281,7 +281,7 @@ def html(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def report_themes(request):
     themes = ReportTheme.objects.filter(is_active=True)
     serializer = SpamThemeSerializer(themes, many=True)

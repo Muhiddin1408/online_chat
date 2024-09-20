@@ -196,13 +196,13 @@ def last_login(request):
 @permission_classes([IsAuthenticated])
 def chat_delete(request, pk):
     chat = Chat.objects.get(id=pk)
-
-    if chat.is_deleted == True:
-        chat.is_deleted == False
-        chat.save()
-        return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
-    else:
-        return Response(status=status.HTTP_200_OK)
+    if not chat:
+        return Response(data={
+            "message": "Not found !"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    chat.is_deleted == False
+    chat.save()
+    return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

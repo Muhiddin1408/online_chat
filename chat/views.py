@@ -200,7 +200,7 @@ def chat_delete(request, pk):
         return Response(data={
             "message": "Not found !"
         }, status=status.HTTP_400_BAD_REQUEST)
-    chat.is_deleted == False
+    chat.is_deleted = False
     chat.save()
     return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
 

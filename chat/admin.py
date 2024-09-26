@@ -8,7 +8,7 @@ from django.db import IntegrityError
 # Register your models here.
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'ip')
+    list_display = ('uuid', 'username', 'email', 'first_name', 'last_name', 'ip')
     search_fields = ('id', 'username', 'ip')
     actions = ['ban_selected_users']
 

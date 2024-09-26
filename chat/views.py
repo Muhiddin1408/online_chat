@@ -11,64 +11,51 @@ from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from .serializers import SerializerUser, SerializerChat, SerializerYears, SerializerMassage, ApartmentMassage, SpamThemeSerializer, UserReponseSerializer, UserSpamSerializer
 from chat.tasks import check_restricted_word
+from django.db import IntegrityError
 
 @api_view(['POST'])
 @permission_classes([AllowAny, ])
 def register(request):
     try:
         ip = request.data.get('ip')
+        uuid = request.data.get('uuid')
         language = request.data.get('language')
         years = request.data.get('years')
         target_years = request.data.get('target_years')
         target_gender = request.data.get('target_gender')
         gender = request.data.get('gender')
-
-        user = User.objects.filter(username=ip)
-        if not user:
-            user = User.objects.create(
-                username=ip,
-                ip=ip,
-                language=language,
-                years_id=years,
-                target_gender=target_gender,
-                # choose_years_id=choose_years[0],
-                gender=gender,
-                login_time=timezone.now()
+        user= User.objects.create(
+            username=ip,
+            ip=ip,
+            uuid=uuid,
+            language=language,
+            years_id=years,
+            target_gender=target_gender,
+            gender=gender,
+            login_time=timezone.now(),
+        )
+        for year in target_years:
+            user.target_years.add(Years.objects.get(id=year))
+            user.save()
+        token = RefreshToken.for_user(user)
+        data = {
+            'access': str(token.access_token),
+            'refresh': str(token),
+            'id': user.id,
+        }
+        return Response(data=data, status=status.HTTP_201_CREATED)
+    except IntegrityError:
+        user = User.objects.get(uuid=uuid)
+        token = RefreshToken.for_user(user)
+        data = {
+            'access': str(token.access_token),
+            'refresh': str(token),
+            'id': user.id,
+        }
+        return Response(
+            data=data,
+            status=status.HTTP_200_OK
             )
-            for year in target_years:
-                user.target_years.add(Years.objects.get(id=year))
-                user.save()
-            token = RefreshToken.for_user(user)
-            result = {
-                'access': str(token.access_token),
-                'refresh': str(token),
-                'id': user.id,
-            }
-            return Response(result, status=status.HTTP_200_OK)
-        else:
-            User.objects.get(username=ip).delete()
-            user = User.objects.create(
-                username=ip,
-                ip=ip,
-                language=language,
-                years_id=years,
-                target_gender=target_gender,
-                # choose_years_id=choose_years[0],
-                gender=gender,
-                login_time=timezone.now()
-            )
-            for year in target_years:
-                user.target_years.add(Years.objects.get(id=year))
-                user.save()
-            token = RefreshToken.for_user(user)
-            result = {
-                'access': str(token.access_token),
-                'refresh': str(token),
-                'id': user.id,
-            }
-            return Response(result, status=status.HTTP_200_OK)
-    except KeyError:
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SmallPagesPagination(PageNumberPagination):

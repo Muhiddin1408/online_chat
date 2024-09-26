@@ -1,3 +1,4 @@
+import uuid
 from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -27,6 +28,10 @@ class User(AbstractUser):
         ('ru', "RU"),
         ('en', "EN"),
     )
+    uuid = models.UUIDField(    
+        unique=True,
+        default = uuid.uuid4, 
+        editable = False)
     ip = models.CharField(max_length=124, blank=True, null=True)
     gender = models.CharField(max_length=123, choices=GENDER, blank=True, null=True)
     target_gender = models.CharField(max_length=123, choices=GENDER, blank=True, null=True)

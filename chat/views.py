@@ -74,14 +74,14 @@ class SearchUser(generics.ListAPIView):
             search = Chat.objects.filter(sender__language=user.language, sender__years__in=user.target_years.all(),
                                          sender__target_years=user.years,
                                          sender__login_time__range=[timezone.now() - timedelta(minutes=5), timezone.now()],
-                                         free=True)
+                                         free=True, is_deleted=True)
 
         else:
             search = Chat.objects.filter(sender__language=user.language, sender__years__in=user.target_years.all(),
                                          sender__gender=user.target_gender,
                                          sender__target_years=user.years,
                                          sender__login_time__range=[timezone.now() - timedelta(minutes=5), timezone.now()],
-                                         free=True)
+                                         free=True, is_deleted=True)
 
         if search:
             for i in search:

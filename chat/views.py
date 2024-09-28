@@ -25,7 +25,6 @@ def register(request):
         target_gender = request.data.get('target_gender')
         gender = request.data.get('gender')
         user= User.objects.create(
-            username=ip,
             ip=ip,
             uuid=uuid,
             language=language,

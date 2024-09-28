@@ -74,26 +74,26 @@ class SearchUser(generics.ListAPIView):
             search = Chat.objects.filter(sender__language=user.language, sender__years__in=user.target_years.all(),
                                          sender__target_years=user.years,
                                          sender__login_time__range=[timezone.now() - timedelta(minutes=5), timezone.now()],
-                                         free=True, is_deleted=True)
+                                         free=True).exclude(sender=user)
 
         else:
             search = Chat.objects.filter(sender__language=user.language, sender__years__in=user.target_years.all(),
                                          sender__gender=user.target_gender,
                                          sender__target_years=user.years,
                                          sender__login_time__range=[timezone.now() - timedelta(minutes=5), timezone.now()],
-                                         free=True, is_deleted=True)
+                                         free=True).exclude(sender=user)
 
         if search:
             for i in search:
                 if i.sender.target_gender == 'all' or i.sender.target_gender == user.gender:
                     result = search.last()
-                    result.receiver = user if result.sender != request.user else None
-                    result.free = False if result.sender != request.user else True
+                    result.receiver = user
+                    result.free = False
                     result.save()
                     context = {
                         'chat_id': result.id,
-                        'user_1': result.sender,
-                        'user_2': result.receiver,
+                        'user_1': result.sender.ip,
+                        'user_2': result.receiver.ip,
                     }
                     return Response(context, status=status.HTTP_200_OK)
         else:
@@ -158,7 +158,7 @@ def create_chat(request):
 @permission_classes([IsAuthenticated])
 def chat_list(request):
     user = request.user
-    chat = Chat.objects.filter(sender=user, is_deleted=True) | Chat.objects.filter(receiver=user, is_deleted=True)
+    chat = Chat.objects.filter(sender=user) | Chat.objects.filter(receiver=user)
     chat.order_by('id').values()
     return Response(SerializerChat(chat, many=True).data)
 

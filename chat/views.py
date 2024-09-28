@@ -158,7 +158,7 @@ def create_chat(request):
 @permission_classes([IsAuthenticated])
 def chat_list(request):
     user = request.user
-    chat = Chat.objects.filter(sender=user, is_deleter=True) | Chat.objects.filter(receiver=user, is_deleted=True)
+    chat = Chat.objects.filter(sender=user, is_deleted=True) | Chat.objects.filter(receiver=user, is_deleted=True)
     chat.order_by('id').values()
     return Response(SerializerChat(chat, many=True).data)
 

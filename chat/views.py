@@ -83,7 +83,7 @@ class SearchUser(generics.ListAPIView):
                                          sender__login_time__range=[timezone.now() - timedelta(minutes=5), timezone.now()],
                                          free=True)
 
-        if search and search.sender != request.user:
+        if search:
             for i in search:
                 if i.sender.target_gender == 'all' or i.sender.target_gender == user.gender:
                     result = search.last()

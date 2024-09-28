@@ -87,13 +87,13 @@ class SearchUser(generics.ListAPIView):
             for i in search:
                 if i.sender.target_gender == 'all' or i.sender.target_gender == user.gender:
                     result = search.last()
-                    result.receiver = user
-                    result.free = False
+                    result.receiver = user if result.sender != request.user else None
+                    result.free = False if result.sender != request.user else True
                     result.save()
                     context = {
                         'chat_id': result.id,
-                        'user_1': result.sender.ip,
-                        'user_2': result.receiver.ip,
+                        'user_1': result.sender,
+                        'user_2': result.receiver,
                     }
                     return Response(context, status=status.HTTP_200_OK)
         else:

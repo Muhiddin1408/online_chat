@@ -130,8 +130,9 @@ class YearView(generics.ListAPIView):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_chat(request, pk):
-    # chat = Chat.objects.get(id=pk)
-    # chat.delete()
+    chat = Chat.objects.get(id=pk)
+    chat.is_deleted = False
+    chat.save()
     return Response(status=status.HTTP_200_OK)
 
 

@@ -32,7 +32,7 @@ class User(AbstractUser):
         unique=True,
         default = uuid.uuid4, 
         editable = False)
-    username = models.CharField(max_length=24, unique=True, null=True, balnk=True)
+    username = models.CharField(max_length=24, unique=True, null=True, blank=True)
     ip = models.CharField(max_length=124, blank=True, null=True)
     gender = models.CharField(max_length=123, choices=GENDER, blank=True, null=True)
     target_gender = models.CharField(max_length=123, choices=GENDER, blank=True, null=True)

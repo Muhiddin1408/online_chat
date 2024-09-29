@@ -24,7 +24,7 @@ def register(request):
         target_years = request.data.get('target_years')
         target_gender = request.data.get('target_gender')
         gender = request.data.get('gender')
-        user= User.objects.create(
+        user = User.objects.create(
             ip=ip,
             uuid=uuid,
             language=language,
@@ -119,20 +119,10 @@ class YearView(generics.ListAPIView):
     pagination_class = SmallPagesPagination
 
     def get(self, request, *args, **kwargs):
-        user = request.user
         product = Years.objects.all()
         serializer = SerializerYears(product, many=True)
         page = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(page)
-
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def delete_chat(request, pk):
-    chat = Chat.objects.get(id=pk)
-    chat.is_deleted = False
-    chat.save()
-    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -157,7 +147,7 @@ def create_chat(request):
 @permission_classes([IsAuthenticated])
 def chat_list(request):
     user = request.user
-    chat = Chat.objects.filter(sender=user) | Chat.objects.filter(receiver=user)
+    chat = Chat.objects.filter(sender=user, is_deleted=False) | Chat.objects.filter(receiver=user, is_deleted=False)
     chat.order_by('id').values()
     return Response(SerializerChat(chat, many=True).data)
 
@@ -187,7 +177,7 @@ def chat_delete(request, pk):
         return Response(data={
             "message": "Not found !"
         }, status=status.HTTP_400_BAD_REQUEST)
-    chat.is_deleted = False
+    chat.is_deleted = True
     chat.save()
     return Response(SerializerChat(chat).data, status=status.HTTP_200_OK)
 
